@@ -1,0 +1,71 @@
+Downloading/unpacking squadron
+  Running setup.py egg_info for package squadron
+
+Downloading/unpacking jsonschema>=2.3.0 (from squadron)
+  Running setup.py egg_info for package jsonschema
+
+Downloading/unpacking gitpython>=0.3.2.RC1 (from squadron)
+  Running setup.py egg_info for package gitpython
+
+    warning: no files found matching 'README'
+Downloading/unpacking quik>=0.2.2 (from squadron)
+  Downloading quik-0.2.2.tar.gz
+  Running setup.py egg_info for package quik
+
+Downloading/unpacking requests>=2.2.0 (from squadron)
+  Running setup.py egg_info for package requests
+
+Downloading/unpacking py>=1.4.19 (from squadron)
+  Running setup.py egg_info for package py
+
+Downloading/unpacking simplejson>=0 (from squadron)
+  Running setup.py egg_info for package simplejson
+
+Downloading/unpacking gitdb>=0.5.1 (from gitpython>=0.3.2.RC1->squadron)
+  Running setup.py egg_info for package gitdb
+
+Downloading/unpacking async>=0.6.1 (from gitdb>=0.5.1->gitpython>=0.3.2.RC1->squadron)
+  Downloading async-0.6.1.tar.gz
+  Running setup.py egg_info for package async
+
+Downloading/unpacking smmap>=0.8.0 (from gitdb>=0.5.1->gitpython>=0.3.2.RC1->squadron)
+  Downloading smmap-0.8.2.tar.gz
+  Running setup.py egg_info for package smmap
+
+Installing collected packages: squadron, jsonschema, gitpython, quik, requests, py, simplejson, gitdb, async, smmap
+  Running setup.py install for squadron
+    changing mode of build/scripts-2.7/squadron from 664 to 775
+
+    changing mode of /home/redprophet/.virtualenvs/dev3/bin/squadron to 775
+  Running setup.py install for jsonschema
+
+  Running setup.py install for gitpython
+
+    warning: no files found matching 'README'
+  Running setup.py install for quik
+
+  Running setup.py install for requests
+
+  Running setup.py install for py
+
+  Running setup.py install for simplejson
+    building 'simplejson._speedups' extension
+    gcc -pthread -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -fPIC -I/usr/include/python2.7 -c simplejson/_speedups.c -o build/temp.linux-x86_64-2.7/simplejson/_speedups.o
+    gcc -pthread -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -Wl,-z,relro build/temp.linux-x86_64-2.7/simplejson/_speedups.o -o build/lib.linux-x86_64-2.7/simplejson/_speedups.so
+
+  Running setup.py install for gitdb
+    building 'gitdb._perf' extension
+    gcc -pthread -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -fPIC -Igitdb -I/usr/include/python2.7 -c gitdb/_fun.c -o build/temp.linux-x86_64-2.7/gitdb/_fun.o
+    gcc -pthread -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -fPIC -Igitdb -I/usr/include/python2.7 -c gitdb/_delta_apply.c -o build/temp.linux-x86_64-2.7/gitdb/_delta_apply.o
+    gcc -pthread -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -Wl,-z,relro build/temp.linux-x86_64-2.7/gitdb/_fun.o build/temp.linux-x86_64-2.7/gitdb/_delta_apply.o -o build/lib.linux-x86_64-2.7/gitdb/_perf.so
+
+  Running setup.py install for async
+    building 'async.mod.zlib' extension
+    gcc -pthread -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -fPIC -I/usr/include/python2.7 -c mod/zlibmodule.c -o build/temp.linux-x86_64-2.7/mod/zlibmodule.o
+    gcc -pthread -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -Wl,-z,relro build/temp.linux-x86_64-2.7/mod/zlibmodule.o -o build/lib.linux-x86_64-2.7/async/mod/zlib.so
+
+  Running setup.py install for smmap
+
+Successfully installed squadron jsonschema gitpython quik requests py simplejson gitdb async smmap
+Cleaning up...
+

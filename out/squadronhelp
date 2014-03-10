@@ -1,0 +1,14 @@
+usage: squadron [command] [options]
+
+Easy configuration management tool
+
+positional arguments:
+  init        Initialization of repositories
+  check       Perform a dry run of an apply
+  apply       Apply this configuration
+  daemon      Background apply config
+  help        Print out help
+  setup       Perform one-time setup
+
+Version 0.2.0 Website: http://gosquadron.com
+

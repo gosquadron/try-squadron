@@ -1,0 +1,28 @@
+{
+   "type": "dir", 
+   "name": "~", 
+   "contents": [
+      { 
+          "type": "dir",
+          "name": ".squadron",
+          "contents": [
+        {
+             "type": "dir", 
+             "name": "state", 
+             "contents": [
+                {
+                   "type": "text", 
+                   "name": "info.json", 
+                   "contents": "{}"
+                }
+             ]
+          }, 
+          {
+             "type": "text", 
+             "name": "config", 
+             "contents": "\n[daemon]\npolltime = 30\n\n[squadron]\nkeydir = /home/redprophet/.squadron/keys\nnodename = override.example.com\nstatedir = /home/redprophet/.squadron/state\nsend_status = false\n\n[status]\nstatus_host = status.gosquadron.com\nstatus_apikey = ABCDEF12345\nstatus_secret = 8d4ce3db954ab1bed870ce682e6765ec24a1227352b3d2688170ecaefda1165c \n"
+          }
+       ]
+      }
+   ]
+}
