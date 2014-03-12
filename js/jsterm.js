@@ -64,7 +64,34 @@ Array.prototype.hasObject = (
       };
    }
 
+    function censor(key, value) {
+        if(value.name == '.' || value.name == '..'){
+            return undefined;
+        }
+        if(value.contents != undefined)
+        {
+            var newContents = new Array();
+            for($i = 0; $i < value.contents.length; $i++)
+            {
+                if(value.contents[$i].name == '.' || 
+                        value.contents[$i].name == '..')
+                {
+                    continue;
+                }
+                newContents.push(value.contents[$i]);
+            }
+            value.contents = newContents;
+            return value;
+        }
+        return value;
+    }
+
    function loadFS(name, cb) {
+        if(name.startswith('newfs'))
+        {
+            cb(Base64.decode(name.replace('newfs', '')));
+            return;
+        } 
       var ajax = new XMLHttpRequest();
 
       ajax.onreadystatechange = function() {
@@ -98,8 +125,12 @@ Array.prototype.hasObject = (
             this.cwd = this.fs; //TODO: make smarter
             this._addDirs(this.fs, this.fs);
             cb && cb();
+            this.base64 = Base64.encode(JSON.stringify(this.fs, censor));
+            this.stringify = JSON.stringify(this.fs, censor);
+            this.newfs = JSON.parse(this.stringify);
          }.bind(this));
       },
+
 
       loadCommands: function(commands) {
          this.commands = commands;
@@ -511,9 +542,14 @@ Array.prototype.hasObject = (
    
    //Setup tutorial
    var step = '1';
+   $newFS = '';
    if(window.location.href.indexOf('?step=') > 0) {
        var params = window.location.href.toString().split(window.location.host)[1].split('?')[1];
        step = params.split('step=')[1];
+       $newFS = params.split('fs=')[1];
+       if($newFS == undefined){
+        $newFS = '';
+        }
    }
 
    $currentState = 0;
@@ -526,7 +562,7 @@ Array.prototype.hasObject = (
    $enabledCommands.push("next");
    $enabledCommands.push("previous");
    $enabledCommands.push("help");
-   $fscmd = ['squadron', 'ls', 'pwd', 'cd', 'cat', 'tree']
+   $fscmd = ['squadron', 'ls', 'pwd', 'cd', 'cat', 'tree', 'mkdir']
    $filesystem = 'json/empty.json';
    switch(step){
     case '12':
@@ -597,6 +633,11 @@ Array.prototype.hasObject = (
    $terminal = term;
    
    NextState(); 
+    if($newFS != '')
+    {
+       $terminal.loadFS('newfs'+$newFS);
+    }
+    
 
     //Disable commands
     for(var key in term.commands)
