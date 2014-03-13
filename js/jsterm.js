@@ -123,11 +123,12 @@ Array.prototype.hasObject = (
             responseText = replaceAll('redprophet', CONFIG.username, responseText);
             this.fs = JSON.parse(responseText);
             this.cwd = this.fs; //TODO: make smarter
-            this._addDirs(this.fs, this.fs);
-            cb && cb();
+            
             this.base64 = Base64.encode(JSON.stringify(this.fs, censor));
             this.stringify = JSON.stringify(this.fs, censor);
             this.newfs = JSON.parse(this.stringify);
+            this._addDirs(this.fs, this.fs); 
+            cb && cb();
          }.bind(this));
       },
 
@@ -168,17 +169,27 @@ Array.prototype.hasObject = (
          this._dequeue();
       },
 
+      //Returns the path to the current directory
       getCWD: function() {
          return this.dirString(this.cwd);
       },
 
+      // 
       dirString: function(d) {
-         var dir = d,
+         var $searchDir = d,
              dirStr = '';
-
-         while (this._dirNamed('..', dir.contents).contents !== dir.contents) {
-            dirStr = '/' + dir.name + dirStr;
-            dir = this._dirNamed('..', dir.contents);
+         $done = false; 
+         while (!$done)
+         {
+            $currentDir = this._dirNamed('..', $searchDir.contents);
+            if($currentDir == null || $currentDir == undefined){
+                debug();
+            }
+            $done = $currentDir.contents == $searchDir.contents;
+            if($done){ break; }
+            //Keep going in
+            dirStr = '/' + $searchDir.name + dirStr;
+            $searchDir = this._dirNamed('..', $searchDir.contents);
          }
          return '~' + dirStr;
       },
@@ -364,7 +375,11 @@ Array.prototype.hasObject = (
             this._dequeue()
          }.bind(this));
       },
-
+      
+      //Returns the 'block' of a particular name.
+      //if it's a directory/link it returns it's contents
+      //if its anything else it returns itself
+      //if it's not found returns null
       _dirNamed: function(name, dir) {
          for (var i in dir) {
             if (dir[i].name == name) {
@@ -538,6 +553,9 @@ Array.prototype.hasObject = (
       return this.indexOf(s) == 0;
    }
 
+if(typeof(Storage)=="undefined"){
+    //We store the FS in the URL instead    
+}
 
    
    //Setup tutorial
@@ -635,7 +653,7 @@ Array.prototype.hasObject = (
    NextState(); 
     if($newFS != '')
     {
-       $terminal.loadFS('newfs'+$newFS);
+       //$terminal.loadFS('newfs'+$newFS);
     }
     
 

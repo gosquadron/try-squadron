@@ -119,6 +119,7 @@ COMMANDS.mkdir = function(argv, cb) {
     $dir.type = "dir";
     $dir.contents = new Array();
     this._terminal.fs.contents.push($dir);
+    this._terminal._addDirs(this._terminal.fs, this._terminal.fs);
     this._terminal.cwd = this._terminal.fs;
     this._terminal.newStdout();
     cb();
