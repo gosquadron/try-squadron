@@ -110,7 +110,56 @@ COMMANDS.next = function(argv, cb) {
    }
     this._terminal.write('At the end of the tutorial');
     cb();
-}
+};
+
+COMMANDS.rm = function(argv, cb) {
+    $parsedArgs = this._terminal.parseArgs(argv);
+    $toDelete = $parsedArgs['filenames'];
+    $args = $parsedArgs['args'];
+    $ask = true;
+    $recurse = false;
+    if($args.indexOf('r') > -1){
+        $recurse = true;
+    }
+    if($args.indexOf('f') > -1){
+        $ask = false;
+    }
+
+    for($i=0; $i < $toDelete.length; $i++){
+        $blockName = $toDelete[$i];
+        $block = this._terminal.getEntry($blockName, false);
+        $cleanBlockName = $block.name;
+        if($block == undefined || $block == null || $block.name == '.' || $block.name == '..'){
+            this._terminal.write('rm: cannot remove "'+$blockName+'": No such file or directory');
+            this._terminal.newStdout();
+            cb();
+            return;
+        }
+        if(this._terminal._IsBlockDir($block))
+        {
+            if($recurse){
+                $parentBlock = this._terminal._GetParentBlock($block);
+                $indexToDelete = this._terminal._GetIndexOfBlockInContent($parentBlock, $cleanBlockName);
+                if($indexToDelete > -1){
+                    $parentBlock.contents.splice($inner, 1);
+                } else {
+                    debugger;
+                } 
+            } else {
+                this._terminal.write('rm: cannot remove "'+$blockName+'": Is a directory');
+            }
+        }
+    }
+    this._terminal.write($args);
+    this._terminal.newStdout();
+    cb();
+};
+
+COMMANDS.printfs = function(argv, cb) {
+  this._terminal.write(this._terminal._GetFSJSON());
+  this._terminal.newStdout();
+  cb();
+};
 
 COMMANDS.mkdir = function(argv, cb) {
     $args = this._terminal.parseArgs(argv)['filenames'];

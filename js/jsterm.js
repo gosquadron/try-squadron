@@ -135,7 +135,11 @@ Array.prototype.hasObject = (
         if($oldcwd == undefined || $oldcwd == null){
             $cwdstr = "~";
         } else {
-            $cwdstr = this.dirString(this.cwd);
+            if(this.cwd == undefined || this.cwd == null){
+                $cwdstr = "~";
+            } else {
+                $cwdstr = this.dirString(this.cwd);
+            }
         }
         this.cwd = this.getEntry($cwdstr); 
         if(this.cwd == undefined || this.cwd == null){
@@ -185,12 +189,16 @@ Array.prototype.hasObject = (
       },
 
       // 
-      dirString: function(d) {
-         var $searchDir = d,
-             dirStr = '';
-         $done = false; 
-         while (!$done)
-         {
+    dirString: function(d) {
+        var $searchDir = d,
+        dirStr = '';
+        
+        if(d.contents.length == 0){
+            return '~';
+        }
+        $done = false; 
+        while (!$done)
+        {
             $currentDir = this._dirNamed('..', $searchDir.contents);
             if($currentDir == null || $currentDir == undefined){
                 //Shouldn't happen
@@ -201,12 +209,16 @@ Array.prototype.hasObject = (
             //Keep going in
             dirStr = '/' + $searchDir.name + dirStr;
             $searchDir = this._dirNamed('..', $searchDir.contents);
-         }
-         return '~' + dirStr;
-      },
+        }
+        return '~' + dirStr;
+    },
 
-      //Gets a 'block' or entry from the system based on a path
-      getEntry: function(path) {
+    //Gets a 'block' or entry from the system based on a path
+    //If retContents is false, always returns block. Otherwise legacy behavior.
+      getEntry: function(path, retContents) {
+        if(retContents == undefined || retContents == null){
+            retContents = true;
+        }
          var entry,
              parts;
 
@@ -225,7 +237,7 @@ Array.prototype.hasObject = (
 
          parts = path.split('/').filter(function(x) {return x;});
          for (var i = 0; i < parts.length; ++i) {
-            entry = this._dirNamed(parts[i], entry.contents);
+            entry = this._dirNamed(parts[i], entry.contents, retContents);
             if (!entry)
                return null;
          }
@@ -410,19 +422,53 @@ Array.prototype.hasObject = (
 
     //Is this file system block a directory/link?
     _IsBlockDir: function(block){
-        return block.type == 'link';
+        return block.type == 'link' || block.type == 'dir';
+    },
+
+    //Get the parent directory
+    _GetParentBlock: function(block){
+        $parentLink = this._dirNamed('..', block, false);
+        if($parentLink == undefined || $parentLink == null){
+            debugger;
+        }   
+        $parentBlock = $parentLink.contents;
+        return $parentBlock;
+    },
+
+    //Get the index of a block with a certain name.
+    //Params:
+    //  - Block: where to search
+    //  - Name: What we're searching for
+    _GetIndexOfBlockInContent: function(block, name){
+        for($inner = 0; $inner < block.contents.length; $inner++){
+            $innerName = block.contents[$inner].name;
+            if($innerName == $cleanBlockName){
+                return $inner;
+            }   
+        }
+        return -1; 
     },
 
     //Returns the 'block' of a particular name.
-    //if it's a directory/link it returns it's contents
-    //if its anything else it returns itself
-    //if it's not found returns null
-    _dirNamed: function(name, dir) {
+    //if it's a directory/link it returns it's contents.
+    //if its anything else it returns itself.
+    //if it's not found returns null.
+    //Params:
+    //if retContents is true or null (default), has legacy behavior.
+    //if retContents is false, will always return block.
+    _dirNamed: function(name, dir, retContents) {
+        if(retContents == undefined || retContents == null){
+            retContents = true;
+        }
         $block = this._FindBlock(name, dir);
         if($block != null){
             if(this._IsBlockDir($block))
             {
+                if(retContents){
                 return $block.contents;
+                } else {
+                    return $block;
+                }
             } else {
                 return $block;
             }
@@ -431,22 +477,27 @@ Array.prototype.hasObject = (
      },
 
       //Adds the fake directories . and ..
-      _addDirs: function(curDir, parentDir) {
-         curDir.contents.forEach(function(entry, i, dir) {
-            if (entry.type == 'dir')
-               this._addDirs(entry, curDir);
-         }.bind(this));
-         curDir.contents.unshift({
-            'name': '..',
-            'type': 'link',
-            'contents': parentDir
-         });
-         curDir.contents.unshift({
-            'name': '.',
-            'type': 'link',
-            'contents': curDir
-         });
-      },
+    _addDirs: function(curDir, parentDir) {
+        curDir.contents.forEach(function(entry, i, dir) {
+        if (entry.type == 'dir')
+            this._addDirs(entry, curDir);
+        }.bind(this));
+
+        if(!this._HasBlock('..', curDir)){
+            curDir.contents.unshift({
+                'name': '..',
+                'type': 'link',
+                'contents': parentDir
+             });
+        }
+        if(!this._HasBlock('.', curDir)){
+            curDir.contents.unshift({
+               'name': '.',
+               'type': 'link',
+               'contents': curDir
+            });
+        }
+    },
 
       _toggleBlinker: function(timeout) {
          var blinker = this.div.querySelector('#blinker'),
@@ -561,11 +612,16 @@ Array.prototype.hasObject = (
             this.loadFS("newfs" + $jsonstr);
         }
     },
+
+    _GetFSJSON: function() {
+        $jsonstr = JSON.stringify(this.fs, censor);
+        this._addDirs(this.fs, this.fs);
+        return $jsonstr;
+    },
  
     //When CMD is called
     _saveFS: function(){
-        $jsonstr = JSON.stringify(this.fs, censor);
-        this._addDirs(this.fs, this.fs);
+        $jsonstr = this._GetFSJSON();
         $.jStorage.set("squadronfs", $jsonstr);
     },
 
@@ -629,6 +685,8 @@ Array.prototype.hasObject = (
    $enabledCommands.push("help");
    $enabledCommands.push("save");
    $enabledCommands.push("reload");
+   $enabledCommands.push("printfs");
+   $enabledCommands.push("rm");
    $fscmd = ['squadron', 'ls', 'pwd', 'cd', 'cat', 'tree', 'mkdir', 'dir']
    $filesystem = 'json/empty.json';
    switch(step){
