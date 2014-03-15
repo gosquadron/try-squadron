@@ -115,16 +115,34 @@ COMMANDS.next = function(argv, cb) {
 COMMANDS.mkdir = function(argv, cb) {
     $args = this._terminal.parseArgs(argv)['filenames'];
     if($args.length == 0){
+        this._terminal.newStdout();
+        cb();
         return;
     }
     $dirName = $args[0];
-    $test = this._terminal.getEntry("~/" + $dirName);
+    //Find where we need to add the dir
+    //$where = filename ? this._terminal.getEntry(filename) : this._terminal.cwd
+    if($dirName.indexOf("/") != -1)
+    {
+        $partialSearch = $dirName.substring(0, $dirName.lastIndexOf("/"));
+        $where = this._terminal.getEntry($partialSearch);
+        if($where == undefined || $where == null){
+            this._terminal.write("Path is invalid");
+            this._terminal.newStdout();
+            cb();
+            return;
+        }
+        $dirName = $dirName.substring($dirName.lastIndexOf("/")+1);
+        debugger;
+    } else {
+        $where = this._terminal.fs;
+    }
     $dir = new Object();
     $dir.name = $dirName;
     $dir.type = "dir";
     $dir.contents = new Array();
     if(!this._terminal._HasBlock($dirName, this._terminal.cwd)){
-        this._terminal.fs.contents.push($dir);
+        $where.contents.push($dir);
         this._terminal._addDirs(this._terminal.fs, this._terminal.fs);
         this._terminal.reloadCWD();
     } else {
