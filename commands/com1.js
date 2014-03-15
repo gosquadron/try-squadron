@@ -114,13 +114,20 @@ COMMANDS.next = function(argv, cb) {
 
 COMMANDS.mkdir = function(argv, cb) {
     $args = this._terminal.parseArgs(argv)['filenames'];
+    if($args.length == 0){
+        return;
+    }
+    $dirName = $args[0];
+    $test = this._terminal.getEntry("~/" + $dirName);
     $dir = new Object();
-    $dir.name = $args[0];
+    $dir.name = $;
     $dir.type = "dir";
     $dir.contents = new Array();
-    this._terminal.fs.contents.push($dir);
-    this._terminal._addDirs(this._terminal.fs, this._terminal.fs);
-    this._terminal.cwd = this._terminal.fs;
+    if(this._terminal._HasBlock($args[0], this._terminal.cwd)){
+        this._terminal.cwd.contents.push($dir);
+        this._terminal._addDirs(this._terminal.fs, this._terminal.fs);
+        this._terminal.cwd = this._terminal.fs;
+    }
     this._terminal.newStdout();
     cb();
     return;
@@ -225,6 +232,10 @@ COMMANDS.ls = function(argv, cb) {
    cb();
 }
 
+
+
+COMMANDS.dir = COMMANDS.ls;
+
 COMMANDS.gimp = function(argv, cb) {
    var filename = this._terminal.parseArgs(argv).filenames[0],
        entry,
@@ -250,6 +261,17 @@ COMMANDS.gimp = function(argv, cb) {
    }
    cb();
 }
+
+COMMANDS.reload = function(argv, cb) {
+    this._terminal._reloadFS();
+    cb();
+}
+
+COMMANDS.save = function(argv, cb) {
+    this._terminal._saveFS();
+    cb();
+}
+
 
 COMMANDS.clear = function(argv, cb) {
    this._terminal.div.innerHTML = '';

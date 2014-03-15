@@ -87,9 +87,10 @@ Array.prototype.hasObject = (
     }
 
    function loadFS(name, cb) {
+        //Hack so that we dont make a new request
         if(name.startswith('newfs'))
         {
-            cb(Base64.decode(name.replace('newfs', '')));
+            cb(name.replace('newfs', ''));
             return;
         } 
       var ajax = new XMLHttpRequest();
@@ -123,10 +124,6 @@ Array.prototype.hasObject = (
             responseText = replaceAll('redprophet', CONFIG.username, responseText);
             this.fs = JSON.parse(responseText);
             this.cwd = this.fs; //TODO: make smarter
-            
-            this.base64 = Base64.encode(JSON.stringify(this.fs, censor));
-            this.stringify = JSON.stringify(this.fs, censor);
-            this.newfs = JSON.parse(this.stringify);
             this._addDirs(this.fs, this.fs); 
             cb && cb();
          }.bind(this));
@@ -183,7 +180,8 @@ Array.prototype.hasObject = (
          {
             $currentDir = this._dirNamed('..', $searchDir.contents);
             if($currentDir == null || $currentDir == undefined){
-                debug();
+                //Shouldn't happen
+                debugger;
             }
             $done = $currentDir.contents == $searchDir.contents;
             if($done){ break; }
@@ -194,6 +192,7 @@ Array.prototype.hasObject = (
          return '~' + dirStr;
       },
 
+      //Gets a 'block' or entry from the system based on a path
       getEntry: function(path) {
          var entry,
              parts;
@@ -375,23 +374,46 @@ Array.prototype.hasObject = (
             this._dequeue()
          }.bind(this));
       },
-      
-      //Returns the 'block' of a particular name.
-      //if it's a directory/link it returns it's contents
-      //if its anything else it returns itself
-      //if it's not found returns null
-      _dirNamed: function(name, dir) {
-         for (var i in dir) {
-            if (dir[i].name == name) {
-               if (dir[i].type == 'link')
-                  return dir[i].contents;
-               else
-                  return dir[i];
-            }
-         }
-         return null;
-      },
+    
+    //Does the dir have a block with that name?
+    _HasBlock: function(name, dir){
+        return this._FindBlock(name, dir) != null;
+    },
 
+    //Loop through the contents of dir until 
+    //we find the block with that name
+    _FindBlock: function(name, dir){
+        for(var i in dir){
+            if(dir[i].name == name){
+                return dir[i];
+            }
+        }
+        return null;
+    },
+
+    //Is this file system block a directory/link?
+    _IsBlockDir: function(block){
+        return block.type == 'link';
+    },
+
+    //Returns the 'block' of a particular name.
+    //if it's a directory/link it returns it's contents
+    //if its anything else it returns itself
+    //if it's not found returns null
+    _dirNamed: function(name, dir) {
+        $block = this._FindBlock(name, dir);
+        if($block != null){
+            if(this._IsBlockDir($block))
+            {
+                return $block.contents;
+            } else {
+                return $block;
+            }
+        }
+        return null;
+     },
+
+      //Adds the fake directories . and ..
       _addDirs: function(curDir, parentDir) {
          curDir.contents.forEach(function(entry, i, dir) {
             if (entry.type == 'dir')
@@ -513,6 +535,22 @@ Array.prototype.hasObject = (
             this._prompt();
          }
       },
+     
+    //When page is loaded or when using cmd
+    _reloadFS: function(){
+        //We add 'newfs' as a hack to not make an AJAX request
+        $jsonstr = $.jStorage.get("squadronfs", "");
+        if($jsonstr != ""){
+            this.loadFS("newfs" + $jsonstr);
+        }
+    },
+ 
+    //When CMD is called
+    _saveFS: function(){
+        $jsonstr = JSON.stringify(this.fs, censor);
+        this._addDirs(this.fs, this.fs);
+        $.jStorage.set("squadronfs", $jsonstr);
+    },
 
       _execute: function(fullCommand) {
          var output = document.createElement('div'),
@@ -553,21 +591,13 @@ Array.prototype.hasObject = (
       return this.indexOf(s) == 0;
    }
 
-if(typeof(Storage)=="undefined"){
-    //We store the FS in the URL instead    
-}
 
    
    //Setup tutorial
    var step = '1';
-   $newFS = '';
    if(window.location.href.indexOf('?step=') > 0) {
        var params = window.location.href.toString().split(window.location.host)[1].split('?')[1];
        step = params.split('step=')[1];
-       $newFS = params.split('fs=')[1];
-       if($newFS == undefined){
-        $newFS = '';
-        }
    }
 
    $currentState = 0;
@@ -580,7 +610,9 @@ if(typeof(Storage)=="undefined"){
    $enabledCommands.push("next");
    $enabledCommands.push("previous");
    $enabledCommands.push("help");
-   $fscmd = ['squadron', 'ls', 'pwd', 'cd', 'cat', 'tree', 'mkdir']
+   $enabledCommands.push("save");
+   $enabledCommands.push("reload");
+   $fscmd = ['squadron', 'ls', 'pwd', 'cd', 'cat', 'tree', 'mkdir', 'dir']
    $filesystem = 'json/empty.json';
    switch(step){
     case '12':
@@ -651,10 +683,6 @@ if(typeof(Storage)=="undefined"){
    $terminal = term;
    
    NextState(); 
-    if($newFS != '')
-    {
-       //$terminal.loadFS('newfs'+$newFS);
-    }
     
 
     //Disable commands
