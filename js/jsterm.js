@@ -123,12 +123,25 @@ Array.prototype.hasObject = (
          loadFS(name, function(responseText) {
             responseText = replaceAll('redprophet', CONFIG.username, responseText);
             this.fs = JSON.parse(responseText);
-            this.cwd = this.fs; //TODO: make smarter
+            this.reloadCWD();
             this._addDirs(this.fs, this.fs); 
             cb && cb();
          }.bind(this));
       },
 
+    //Sets cwd back, if oldcwd is null it just loads that path
+    reloadCWD: function($oldcwd) {
+        $oldcwd = typeof $oldcwd !== 'undefined' ? $oldcwd : this.cwd;
+        if($oldcwd == undefined || $oldcwd == null){
+            $cwdstr = "~";
+        } else {
+            $cwdstr = this.dirString(this.cwd);
+        }
+        this.cwd = this.getEntry($cwdstr); 
+        if(this.cwd == undefined || this.cwd == null){
+            debugger;
+        }   
+    },
 
       loadCommands: function(commands) {
          this.commands = commands;
@@ -382,7 +395,11 @@ Array.prototype.hasObject = (
 
     //Loop through the contents of dir until 
     //we find the block with that name
+    //dir can be the dir, or the contents
     _FindBlock: function(name, dir){
+        if(dir.contents != undefined || dir.contents != null){
+            dir = dir.contents;
+        }
         for(var i in dir){
             if(dir[i].name == name){
                 return dir[i];

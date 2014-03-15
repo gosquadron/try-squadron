@@ -120,13 +120,15 @@ COMMANDS.mkdir = function(argv, cb) {
     $dirName = $args[0];
     $test = this._terminal.getEntry("~/" + $dirName);
     $dir = new Object();
-    $dir.name = $;
+    $dir.name = $dirName;
     $dir.type = "dir";
     $dir.contents = new Array();
-    if(this._terminal._HasBlock($args[0], this._terminal.cwd)){
-        this._terminal.cwd.contents.push($dir);
+    if(!this._terminal._HasBlock($dirName, this._terminal.cwd)){
+        this._terminal.fs.contents.push($dir);
         this._terminal._addDirs(this._terminal.fs, this._terminal.fs);
-        this._terminal.cwd = this._terminal.fs;
+        this._terminal.reloadCWD();
+    } else {
+        this._terminal.write("Directory already exists.");
     }
     this._terminal.newStdout();
     cb();
