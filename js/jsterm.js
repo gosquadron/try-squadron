@@ -86,6 +86,7 @@ Array.prototype.hasObject = (
         return value;
     }
 
+    //Completely loads a new FS
    function loadFS(name, cb) {
         //Hack so that we dont make a new request
         if(name.startswith('newfs'))
@@ -118,8 +119,30 @@ Array.prototype.hasObject = (
          else if (cb)
             cb();
       },
+    
+    //Used for squadron commands, will merge the FS loaded into the cwd.
+    loadFSIntoDir: function(name, cb){
+        loadFS(name, function(responseText) {
+            responseText = replaceAll('redprophet', CONFIG.username, responseText);
+            $newfs = JSON.parse(responseText);
+            if(this.cwd == undefined || this.cwd == null){
+                if(this.fs == undefined || this.fs == null){
+                    this.fs = $newfs;
+                    this.reloadCWD();
+                } else {
+                    this.fs.contents = this.fs.contents.concat($newfs.contents);
+                }
+                this.reloadCWD();
+            } else {
+                this.cwd.contents = this.cwd.contents.concat($newfs.contents);
+            }
+            this._addDirs(this.fs, this.fs);
+//            debugger;
+        }.bind(this));
 
-      loadFS: function(name, cb) {
+    },
+
+    loadFS: function(name, cb) {
          loadFS(name, function(responseText) {
             responseText = replaceAll('redprophet', CONFIG.username, responseText);
             this.fs = JSON.parse(responseText);
@@ -127,7 +150,7 @@ Array.prototype.hasObject = (
             this._addDirs(this.fs, this.fs); 
             cb && cb();
          }.bind(this));
-      },
+    },
 
     //Sets cwd back, if oldcwd is null it just loads that path
     reloadCWD: function($oldcwd) {
@@ -141,7 +164,7 @@ Array.prototype.hasObject = (
                 $cwdstr = this.dirString(this.cwd);
             }
         }
-        this.cwd = this.getEntry($cwdstr); 
+        this.cwd = this.getEntry($cwdstr, false); 
         if(this.cwd == undefined || this.cwd == null){
             debugger;
         }   
@@ -192,7 +215,9 @@ Array.prototype.hasObject = (
     dirString: function(d) {
         var $searchDir = d,
         dirStr = '';
-        
+        if(d == undefined || d == null || d.contents == undefined || d.contents == null){
+            debugger;
+        }
         if(d.contents.length == 0){
             return '~';
         }
@@ -237,11 +262,13 @@ Array.prototype.hasObject = (
 
          parts = path.split('/').filter(function(x) {return x;});
          for (var i = 0; i < parts.length; ++i) {
-            entry = this._dirNamed(parts[i], entry.contents, retContents);
+            entry = this._dirNamed(parts[i], entry.contents, false);
             if (!entry)
                return null;
          }
-
+         if(retContents){
+             return entry.contents;
+         }
          return entry;
       },
 
@@ -409,6 +436,9 @@ Array.prototype.hasObject = (
     //we find the block with that name
     //dir can be the dir, or the contents
     _FindBlock: function(name, dir){
+        if(dir == undefined || dir == null){
+            debugger;
+        }
         if(dir.contents != undefined || dir.contents != null){
             dir = dir.contents;
         }
@@ -796,8 +826,11 @@ function UpdateSpeechBubble($html){
 
 function NextState(){
     UpdateSpeechBubble($states[$currentState]);
-    if($stateFS.length >= $currentState && $stateFS.length > 0){
-        $terminal.loadFS('json/' + $stateFS[$currentState] + '.json');
+    if($stateFS.length >= $currentState && $stateFS.length > 0) {
+        $newState = $stateFS[$currentState];
+        if($newState != undefined && $newState != null){ 
+            $terminal.loadFSIntoDir('json/' + $newState + '.json');
+        }
     }
     $currentState++;
 }

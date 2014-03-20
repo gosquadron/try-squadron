@@ -184,7 +184,7 @@ COMMANDS.mkdir = function(argv, cb) {
         $dirName = $dirName.substring($dirName.lastIndexOf("/")+1);
         debugger;
     } else {
-        $where = this._terminal.fs;
+        $where = this._terminal.cwd;
     }
     $dir = new Object();
     $dir.name = $dirName;
@@ -236,18 +236,23 @@ COMMANDS.pip = function(argv, cb) {
 }
 
 COMMANDS.cd = function(argv, cb) {
-   var filename = this._terminal.parseArgs(argv).filenames[0],
+    var filename = this._terminal.parseArgs(argv).filenames[0],
        entry;
 
-   if (!filename)
+   if (!filename){
       filename = '~';
-   entry = this._terminal.getEntry(filename);
-   if (!entry)
+    }
+    entry = this._terminal.getEntry(filename, false);
+    if (!entry){
       this._terminal.write('bash: cd: ' + filename + ': No such file or directory');
-   else if (entry.type !== 'dir')
+    } else if (entry.type !== 'dir' && entry.type !== 'link') {
       this._terminal.write('bash: cd: ' + filename + ': Not a directory.');
-   else
+    } else if (entry.type == 'dir') {
       this._terminal.cwd = entry;
+    } else {
+        //This is a link
+        this._terminal.cwd = entry.contents;
+    }
    cb();
 }
 
@@ -404,7 +409,7 @@ COMMANDS.tree = function(argv, cb) {
             writeTree(entry, level + 1);
       });
    };
-   home = this._terminal.getEntry('~');
+   home = this._terminal.getEntry('~', false);
    this._terminal.writeLink(home, '~');
    this._terminal.write('<br>');
    writeTree(home, 0);
