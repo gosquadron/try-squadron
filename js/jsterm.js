@@ -769,6 +769,7 @@ Array.prototype.hasObject = (
     case '4':
         $states.push("To start describing your service type:<br/><br/><span class='code'>squadron init --service web</span>");
         $stateFS.push('empty');
+        $stateFS.push('init_service');
         $enabledCommands = $enabledCommands.concat($fscmd);
         break;
     case '3':

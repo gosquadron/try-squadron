@@ -1,0 +1,54 @@
+{
+   "type": "dir",
+   "name": "~",
+   "contents": [
+      {
+         "type": "dir", 
+         "name": "service", 
+         "contents": [
+         {
+            "type": "dir",
+            "name": "0.0.1",
+            "contents": [
+                {
+                    "type": "text",
+                    "name": "actions.json",
+                    "description": "TODO"
+                },
+                {
+                    "type": "text",
+                    "name": "defaults.json",
+                    "description": "TODO"
+                },
+                {
+                    "type": "text",
+                    "name": "react.json",
+                    "description": "TODO"
+                },
+                {
+                    "type": "dir",
+                    "name": "root",
+                    "contents": []
+                },
+                {
+                    "type": "text",
+                    "name": "schema.json",
+                    "description": "TODO"
+                },
+                {
+                    "type": "text",
+                    "name": "state.json",
+                    "description": "TODO"
+                },
+                {
+                    "type": "dir",
+                    "name": "tests",
+                    "contents": []
+                }
+            ]
+         }
+        ]
+      }
+   ]
+}
+
