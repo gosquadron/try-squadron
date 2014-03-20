@@ -310,7 +310,7 @@ Array.prototype.hasObject = (
             // TODO: Combine with below.
             var pathParts = parts[0].replace(/[\/]+/, '/').split('/'),
                 last = pathParts.pop(),
-                dir = (pathParts.length > 0) ? this.getEntry(pathParts.join('/')) : this.cwd,
+                dir = (pathParts.length > 0) ? this.getEntry(pathParts.join('/'), false) : this.cwd,
                 n,
                 fullPath,
                 last,
@@ -336,7 +336,7 @@ Array.prototype.hasObject = (
             fullPath = parts[parts.length - 1];
             pathParts = fullPath.replace(/[\/]+/, '/').split('/');
             last = pathParts.pop();
-            dir = (pathParts.length > 0) ? this.getEntry(pathParts.join('/')) : this.cwd;
+            dir = (pathParts.length > 0) ? this.getEntry(pathParts.join('/'), false) : this.cwd;
 
             if (!dir)
                return [];
