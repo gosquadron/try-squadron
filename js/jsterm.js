@@ -88,10 +88,21 @@ Array.prototype.hasObject = (
 
     //Completely loads a new FS
    function loadFS(name, cb) {
-        //Hack so that we dont make a new request
+
         if(name.startswith('newfs'))
         {
             cb(name.replace('newfs', ''));
+            return;
+        } 
+
+       if(name.indexOf('empty.json')>0){
+           $empty = {
+                   "name": "~",
+                   "type": "dir",
+                   "contents": [ 
+                       ]
+                    }; 
+            cb(JSON.stringify($empty));
             return;
         } 
       var ajax = new XMLHttpRequest();
@@ -137,6 +148,10 @@ Array.prototype.hasObject = (
                 this.cwd.contents = this.cwd.contents.concat($newfs.contents);
             }
             this._addDirs(this.fs, this.fs);
+            if($currentStep > 1 && !$alreadyLoadedSavedFS){
+                this._reloadFS();
+                $alreadyLoadedSavedFS = true;
+            }
 //            debugger;
         }.bind(this));
 
@@ -703,6 +718,7 @@ Array.prototype.hasObject = (
        step = params.split('step=')[1];
    }
 
+   $alreadyLoadedSavedFS = false;
    $currentState = 0;
    $states = new Array();
    $stateFS = new Array();
@@ -746,33 +762,34 @@ Array.prototype.hasObject = (
         break;
     case '4':
         $states.push("To start describing your service type:<br/><br/><span class='code'>squadron init --service web</span>");
-        $stateFS.push('init');
+        $stateFS.push('empty');
         $enabledCommands = $enabledCommands.concat($fscmd);
         break;
     case '3':
-        $states.push("We're going to setup a repository for your squadron deployment, type: <br/><br/><span class='code'>cd repo<br/>squadron init</span>");
-        $states.push("This is what a base repository looks like, type <span class='code'>tree</span> to get a better look.<br/><br/>Next we'll describe our first service.</span>");
-        $stateFS.push('preinit');
+        $states.push("We're going to setup a repository for your squadron deployment, type: <br/><br/><span class='code'>mkdir repo<br/>cd repo<br/>squadron init</span>");
+        $states.push("This is what a base repository looks like, type <span class='code'>tree</span> to get a better look.<br/><br/>Next we'll describe our first service. Type next when you're ready.</span>");
+        $stateFS.push('empty');
         $stateFS.push('init');
         $enabledCommands = $enabledCommands.concat($fscmd);
         break;
     case '2':
         $states.push("Now we're going to do the system setup, type: <br/><br/><span class='code'>squadron setup</span>");
-        $states.push("In this tutorial, we're going to be placing everything in your home directory. <br/>In real squadron, you are prompted for the path.<br/><br/>Feel free to browse what we just created. Try for instance: <br/><span class='code'>ls -la<br/>tree<br/>cat .squadron/config</span><br/></br>You can see all commands by typing <span class='code'>help</span>.<br/>In the next section we'll setup a repository.");
+        $states.push("In this tutorial, we're going to be placing everything in your home directory. <br/>In real squadron, you are prompted for the path.<br/><br/>Feel free to browse what we just created. Try for instance: <br/><span class='code'>ls -la<br/>tree<br/>cat .squadron/config</span><br/></br>You can see all commands by typing <span class='code'>help</span>.<br/>In the next section we'll setup a repository. Type next when you're ready.");
         $enabledCommands = $enabledCommands.concat($fscmd);
         $stateFS.push('empty');
         $stateFS.push('setup');
         break;
     case '1':
     default:
+        
         $enabledCommands.push("pip");
         $stateFS.push('empty');
         $states.push("Welcome to Squadron's Tutorial! I'm Rawls and I'm here to help you.<br/>Let's install squadron with the following command:<br/><br/><span class='code'>pip install squadron</span>");
         $states.push("Well done! <br/><br/>Use the navigation bar below to move to the next step or type: <br/><br/><span class='code'>next</span>");
         break;
    }
-  
-    
+ 
+   
     //Setup term
    $terminal_div = $(".term-squadron")[0];
    $cb_func = function() {
@@ -786,11 +803,8 @@ Array.prototype.hasObject = (
       term.typeCommand(command);
    };
    $terminal = term;
-   
    NextState(); 
-    
-
-    //Disable commands
+     //Disable commands
     for(var key in term.commands)
     {
         if(term.commands.hasOwnProperty(key) && !$enabledCommands.hasObject(key)){
@@ -816,6 +830,11 @@ Array.prototype.hasObject = (
         $($crums[$i]).attr('href', 'index.html?step='+($i+1));
 
    }
+
+   //Setup binds for next and previous
+   $(".next").click(function() {
+        $terminal._saveFS();
+   });
 
 })();
 

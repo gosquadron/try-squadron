@@ -81,7 +81,7 @@ COMMANDS.squadron = function(argv, cb) {
         OutputCmd(this, 'setup');
         NextState();
     } else if ($args[0] == 'init') {
-        if(this._terminal.cwd.name != 'repo')
+        if(false &&this._terminal.cwd.name != 'repo')
         {
             this._terminal.write('please cd into repo dir');
             cb();
@@ -102,9 +102,11 @@ COMMANDS.next = function(argv, cb) {
 
     $crums = $(".breadcrum a");
     $num = $crums.length;
-    for($i = 0; $i < $num; $i++){
-        if($($crums[$i]).hasClass('next')){
-            window.location = $($crums[$i]).attr('href');
+    for($index = 0; $index < $num; $index++){
+        if($($crums[$index]).hasClass('next')){
+            $url = $($crums[$index]).attr('href');
+            this._terminal._saveFS();
+            window.location = $url;
             return;
         }
    }
