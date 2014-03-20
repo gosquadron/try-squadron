@@ -670,6 +670,11 @@ Array.prototype.hasObject = (
         $.jStorage.set("squadronfs", $jsonstr);
     },
 
+    _resetFS: function() {
+        $.jStorage.deleteKey("squadronfs");
+        location.reload();
+    },
+
       _execute: function(fullCommand) {
          var output = document.createElement('div'),
              stdout = document.createElement('span'),
@@ -733,6 +738,7 @@ Array.prototype.hasObject = (
    $enabledCommands.push("reload");
    $enabledCommands.push("printfs");
    $enabledCommands.push("rm");
+   $enabledCommands.push("resetfs");
    $fscmd = ['squadron', 'ls', 'pwd', 'cd', 'cat', 'tree', 'mkdir', 'dir']
    $filesystem = 'json/empty.json';
    switch(step){

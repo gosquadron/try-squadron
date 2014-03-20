@@ -43,6 +43,17 @@ function sleep(millis, callback) {
        , millis);
 }
 
+COMMANDS.resetfs = function(argv, cb) {
+    $args = this._terminal.parseArgs(argv).filenames;
+    if($args[0] == 'YES'){
+        this._terminal._resetFS();
+    } else {
+        this._terminal.write("This resets the file system to be empty. Please type 'YES' as the argument if you are really sure you want to do this.");
+    }
+    this._terminal.newStdout();
+    cb();
+};
+
 COMMANDS.cat =  function(argv, cb) {
    var filenames = this._terminal.parseArgs(argv).filenames,
        stdout;
