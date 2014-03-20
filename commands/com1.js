@@ -88,18 +88,22 @@ COMMANDS.cat =  function(argv, cb) {
 COMMANDS.squadron = function(argv, cb) {
 
     $args = this._terminal.parseArgs(argv)['filenames'];
+    $specialArgs = this._terminal.parseArgs(argv)['args'];
+    $jSpecial = $specialArgs.join().replace(/\,/g,'');
     if($args[0] == 'setup'){
         OutputCmd(this, 'setup');
         NextState();
-    } else if ($args[0] == 'init') {
-        if(false &&this._terminal.cwd.name != 'repo')
-        {
-            this._terminal.write('please cd into repo dir');
-            cb();
-            return;
+    } else if ($args[0] == 'init' ) {
+        if($args.length == 1 && $specialArgs.length == 0){
+            OutputCmd(this, 'init');
+            NextState();
+        } else if($jSpecial == '-service' && $args.length == 2){
+            OutputCmd(this, 'init_service');
+            NextState();
+        } else {
+            this._terminal.write("Invalid syntax for init");
+            this._terminal.newStdout();
         }
-        OutputCmd(this, 'init');
-        NextState();
         
     }else {
         OutputCmd(this, 'squadronhelp');
