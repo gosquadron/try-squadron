@@ -4,7 +4,7 @@
    "contents": [
       {
          "type": "dir", 
-         "name": "service", 
+         "name": "services", 
          "contents": [
          {
             "type": "dir",
@@ -13,17 +13,20 @@
                 {
                     "type": "text",
                     "name": "actions.json",
-                    "description": "TODO"
+                    "description": "TODO",
+                    "contents": "{}"
                 },
                 {
                     "type": "text",
                     "name": "defaults.json",
-                    "description": "TODO"
+                    "description": "TODO",
+                    "contents": "{}"
                 },
                 {
                     "type": "text",
                     "name": "react.json",
-                    "description": "TODO"
+                    "description": "TODO",
+                    "contents": "{}"
                 },
                 {
                     "type": "dir",
@@ -33,7 +36,8 @@
                 {
                     "type": "text",
                     "name": "schema.json",
-                    "description": "TODO"
+                    "description": "TODO",
+                    "contents": "{\n\t\"$schema\": \"http://json-schema.org/draft-04/schema#\",\n\t\"properties\": {},\n\t\"type\": \"object\"\n}"
                 },
                 {
                     "type": "text",

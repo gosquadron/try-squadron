@@ -131,6 +131,10 @@ Array.prototype.hasObject = (
             cb();
       },
     
+    dedupeFolders: function(){
+        
+    },
+
     //Used for squadron commands, will merge the FS loaded into the cwd.
     loadFSIntoDir: function(name, cb){
         loadFS(name, function(responseText) {
@@ -142,6 +146,8 @@ Array.prototype.hasObject = (
                     this.reloadCWD();
                 } else {
                     this.fs.contents = this.fs.contents.concat($newfs.contents);
+                    //Remove duplicate folders by merging them
+                    this.dedupeFolders();            
                 }
                 this.reloadCWD();
             } else {

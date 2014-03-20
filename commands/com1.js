@@ -71,14 +71,17 @@ COMMANDS.cat =  function(argv, cb) {
       return;
    }
    filenames.forEach(function(filename, i) {
-      var entry = this._terminal.getEntry(filename);
+      var entry = this._terminal.getEntry(filename, false);
 
-      if (!entry)
+      if (!entry){
          this._terminal.write('cat: ' + filename + ': No such file or directory');
-      else if (entry.type === 'dir')
+      }
+      else if (entry.type === 'dir'){
          this._terminal.write('cat: ' + filename + ': Is a directory.');
-      else
+      }
+      else{
          this._terminal.write(entry.contents);
+      }
       if (i !== filenames.length - 1)
          this._terminal.write('<br>');
    }, this);
