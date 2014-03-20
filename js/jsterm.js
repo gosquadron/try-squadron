@@ -131,8 +131,39 @@ Array.prototype.hasObject = (
             cb();
       },
     
-    dedupeFolders: function(){
-        
+    dedupeFolders: function($curDir){
+        if($curDir == undefined || $curDir == null){
+            $curDir = this.fs;
+        }
+        if($curDir.contents != undefined && $curDir.contents != null)
+        {
+            if($curDir.contents.length == 0){
+                return;
+            }
+            $seenNames = new Array();
+            for($i = 0; $i < $curDir.contents.length; $i++){
+                if($curDir.contents[$i].name == '.' || $curDir.contents[$i].name == '..' || $curDir.type != "dir"){
+                    continue;
+                }
+                $nextItem = $curDir.contents[$i];
+                
+                this.dedupeFolders($nextItem);
+                $nextItemName = $nextItem.name;
+                $seenNames.push([$nextItemName, $i]);
+            }
+            $seenNames.sort();
+            if($seenNames.length > 0){
+                $lastSeen = $seenNames[0][0];
+                for($i = 0; $i < $seenNames.length; $i++){
+                    if($lastSeen == $seenNames[$i][0]){
+                        $nothing = $lastSeen;
+//                        debugger;
+                    }
+                    $lastSeen = $seenNames[$i][0];
+                }
+            }
+            
+        }
     },
 
     //Used for squadron commands, will merge the FS loaded into the cwd.
@@ -152,6 +183,7 @@ Array.prototype.hasObject = (
                 this.reloadCWD();
             } else {
                 this.cwd.contents = this.cwd.contents.concat($newfs.contents);
+                this.dedupeFolders();
             }
             this._addDirs(this.fs, this.fs);
             if($currentStep > 1 && !$alreadyLoadedSavedFS){
