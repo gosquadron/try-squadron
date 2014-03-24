@@ -867,10 +867,42 @@ Array.prototype.hasObject = (
         $states.push('cute cute cute');
         break;
     case '7':
-        $states.push(':)');
+        $states.push('Every service will have a schema.json, this file is extremely useful to make sure that your service has the correct type of inputs before even doing anything. Let\'s edit schema.json in our new service.');
+        $states.push('{<br/>\
+"$schema": "http://json-schema.org/draft-04/schema#",<br/>\
+"type" : "object",<br/>\
+"properties" : {<br/>\
+"disallow" : {<br/>\
+"description" : "a list of disallow directives",<br/>\
+"type" : "array",<br/>\
+"items": {<br/>\
+"type": "string"<br/>\
+},<br/>\
+"uniqueItems": true<br/>\
+},<br/>\
+"release" : {<br/>\
+"description" : "what to checkout from the git repository",<br/>\
+"type" : "string"<br/>\
+}<br/>\
+},<br/>\
+"required": ["disallow", "release"]<br/>\
+}');
         break;
     case '6':
-        $states.push('<iframe width="560" height="315" src="//www.youtube.com/embed/saJxQEreRtM?autoplay=1" frameborder="0" allowfullscreen></iframe>');
+        $states.push("Alright, to set the variables we just used, we need to configure 'environments', such as dev, production.<br/>Let's create an environment by calling <span class='code'>squadron init --env dev</span>");
+        $states.push("Now there will be a file under config/dev/web.json.<br/>Let's <span class='code'>edit web.json</span>");
+        $states.push("Let's add the variables we just used.<br/>We'll also be adding \"base_dir\" which tells squadron where \"root\" belongs.<br/>Notice the latest version number is there already<br/><span class='code'>{<br/>\
+&nbsp;&nbsp;&nbsp;\"base_dir\": \"/var/www\",<br/>\
+&nbsp;&nbsp;&nbsp;\"config\": {<br/>\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"disallow\":[\"/secret/*\",\"/admin/*\"],<br/>\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"release\":\"master\"<br/>\
+&nbsp;&nbsp;&nbsp;},<br/>\
+&nbsp;&nbsp;&nbsp;\"version\": \"0.0.1\"<br/>\
+}");
+        $states.push("The other way varialbes are set are using defaults, we could edited defaults.json under our service to achieve this. Next we'll cover schemas.");
+        $stateFS.push('empty');
+        $enabledCommands = $enabledCommands.concat($fscmd);
+        $enabledCommands.push('edit');
         break;
     case '5':
         $states.push("Squadron takes whatever is in the root folder of your service and deploys them. <br/>Let's take a look at how that works. <br/>Go into the directory of your service and then into root.");
