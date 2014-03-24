@@ -25,6 +25,9 @@ function GetOutput(outname){
         cache: false
     }).responseText
     $text = replaceAll('redprophet', 'rawls', $text);
+    if(typeof $serviceName != 'undefined' && $serviceName != null){
+        $text = replaceAll('~servicename~', $serviceName, $text);
+    }
     return $text;
 
 }
@@ -101,6 +104,7 @@ COMMANDS.squadron = function(argv, cb) {
             OutputCmd(this, 'init');
             NextState();
         } else if($jSpecial == '-service' && $args.length == 2){
+            $serviceName = $args[1];//We will replace this automatically
             OutputCmd(this, 'init_service');
             NextState();
         } else {
@@ -253,7 +257,9 @@ COMMANDS.pip = function(argv, cb) {
     }
     cb();
     NextState();
-}
+},
+
+COMMANDS.edit = function(argv, cb){}
 
 COMMANDS.cd = function(argv, cb) {
     var filename = this._terminal.parseArgs(argv).filenames[0],

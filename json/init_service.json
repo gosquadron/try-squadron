@@ -6,52 +6,59 @@
          "type": "dir", 
          "name": "services", 
          "contents": [
-         {
-            "type": "dir",
-            "name": "0.0.1",
-            "contents": [
-                {
-                    "type": "text",
-                    "name": "actions.json",
-                    "description": "TODO",
-                    "contents": "{}"
-                },
-                {
-                    "type": "text",
-                    "name": "defaults.json",
-                    "description": "TODO",
-                    "contents": "{}"
-                },
-                {
-                    "type": "text",
-                    "name": "react.json",
-                    "description": "TODO",
-                    "contents": "{}"
-                },
-                {
-                    "type": "dir",
-                    "name": "root",
-                    "contents": []
-                },
-                {
-                    "type": "text",
-                    "name": "schema.json",
-                    "description": "TODO",
-                    "contents": "{\n\t\"$schema\": \"http://json-schema.org/draft-04/schema#\",\n\t\"properties\": {},\n\t\"type\": \"object\"\n}"
-                },
-                {
-                    "type": "text",
-                    "name": "state.json",
-                    "description": "TODO"
-                },
-                {
-                    "type": "dir",
-                    "name": "tests",
-                    "contents": []
-                }
-            ]
-         }
-        ]
+             {
+                "type": "dir",
+                "name": "~servicename~",
+                "contents": [ 
+                    {
+                        "type": "dir",
+                        "name": "0.0.1",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "name": "actions.json",
+                                "description": "TODO",
+                                "contents": "{}"
+                            },
+                            {
+                                "type": "text",
+                                "name": "defaults.json",
+                                "description": "TODO",
+                                "contents": "{}"
+                            },
+                            {
+                                "type": "text",
+                                "name": "react.json",
+                                "description": "TODO",
+                                "contents": "{}"
+                            },
+                            {
+                                "type": "dir",
+                                "name": "root",
+                                "contents": []
+                            },
+                            {
+                                "type": "text",
+                                "name": "schema.json",
+                                "description": "TODO",
+                                "contents": "{\n\t\"$schema\": \"http://json-schema.org/draft-04/schema#\",\n\t\"properties\": {},\n\t\"type\": \"object\"\n}"
+                            },
+                            {
+                                "type": "text",
+                                "name": "state.json",
+                                "description": "TODO",
+                                "contents": "{}"
+                            },
+                            {
+                                "type": "dir",
+                                "name": "tests",
+                                "contents": []
+                            }
+                        ]
+                    }
+                ]
+            }
+         ]
       }
    ]
 }

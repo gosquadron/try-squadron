@@ -111,7 +111,8 @@ Array.prototype.hasObject = (
          if (ajax.readyState == 4 && ajax.status == 200)
             cb(ajax.responseText);
       };
-      ajax.open('GET', name);
+      //We want a fresh copy all the time
+      ajax.open('GET', name+'?rand='+Math.floor((Math.random()*20)+1));
       ajax.send();
    };
 
@@ -193,7 +194,7 @@ Array.prototype.hasObject = (
                             //Now remove the slave
                             $curDir.contents.splice($SlaveIndex, 1);
 
-                            debugger;
+                            //debugger;
                         }
                         $lastSeenName = $curSeenName;
                         $lastSeenIndex = $seenNames[i][1];
@@ -217,6 +218,9 @@ Array.prototype.hasObject = (
     loadFSIntoDir: function(name, cb){
         loadFS(name, function(responseText) {
             responseText = replaceAll('redprophet', CONFIG.username, responseText);
+            if(typeof $serviceName != 'undefined'  && $serviceName != null){
+                responseText = replaceAll('~servicename~', $serviceName, responseText);
+            }
             $newfs = JSON.parse(responseText);
             if(this.cwd == undefined || this.cwd == null){
                 if(this.fs == undefined || this.fs == null){
@@ -741,6 +745,19 @@ Array.prototype.hasObject = (
         if($jsonstr != ""){
             this.loadFS("newfs" + $jsonstr);
         }
+        $lastcwd = $.jStorage.get("squadroncwd", "~");
+        entry = this.getEntry($lastcwd, false); 
+        if(entry != null){
+           if (entry.type == 'dir') {
+              this.cwd = entry;
+            } else {
+                //This is a link
+                this.cwd = entry.contents;
+            }
+        }
+        //This reloads the terminal so it updates the cwd
+        this.defaultReturnHandler();
+        this._prompt()
     },
 
     _GetFSJSON: function() {
@@ -753,6 +770,7 @@ Array.prototype.hasObject = (
     _saveFS: function(){
         $jsonstr = this._GetFSJSON();
         $.jStorage.set("squadronfs", $jsonstr);
+        $.jStorage.set("squadroncwd", this.dirString(this.cwd));
     },
 
     _resetFS: function() {
@@ -849,10 +867,12 @@ Array.prototype.hasObject = (
         $states.push('<iframe width="560" height="315" src="//www.youtube.com/embed/saJxQEreRtM?autoplay=1" frameborder="0" allowfullscreen></iframe>');
         break;
     case '5':
-        $states.push("pon pon pon");
+        $states.push("Squadron takes whatever is in the root folder of your service and deploys them. <br/>Let's take a look at how that works. <br/>Go into the directory of your service and then into root.");
+        $stateFS.push('empty');
         break;
     case '4':
         $states.push("To start describing your service type:<br/><br/><span class='code'>squadron init --service web</span>");
+        $states.push("Note: in real squadron version # can be a parameter.<br/><br/>For our service let's modify the state of the system. Type <span class='code'>cat state.json</span>, normally this file is empty. Let's edit it. Type <span class='code'>edit state.json</span>.");
         $stateFS.push('empty');
         $stateFS.push('init_service');
         $enabledCommands = $enabledCommands.concat($fscmd);
