@@ -874,12 +874,18 @@ Array.prototype.hasObject = (
         break;
     case '5':
         $states.push("Squadron takes whatever is in the root folder of your service and deploys them. <br/>Let's take a look at how that works. <br/>Go into the directory of your service and then into root.");
-        $states.push("Great, now let's create a few files. We'll create our robots.txt file from a template. <span class='code'>edit robots.txt~tpl</span>");
+        $states.push("Great, now let's create a few files. <br/>First, We'll create our robots.txt file from a template. We'll actually call it robots.txt~tpl.<br/>~ is the keyword that an extension handler will take care of it.<br/>The tpl or templating extension handler will be run through this.<br/><span class='code'>edit robots.txt~tpl</span>");
         $states.push("Enter the text below, notice the variables starting with @.<br/><span class='code'>User-agent: * <br/>\
 #for @d in @disallow:<br/>\
 Disallow: @d<br/>\
 #end<br/>\
 Allow: /humans.txt</span>");
+        $states.push("Now let's do another extension handler, this one will is for git repositories. <span class='code'>edit main~git</span>");
+        $states.push("The following will tell the handler to clone the repo, of the @release branch, which is a variable.<br/><span class='code'>{<br/>\
+&nbsp;&nbsp;&nbsp;\"url\":\"https://github.com/cxxr/example-squadron-repo.git\",<br/>\
+&nbsp;&nbsp;&nbsp;\"refspec\":\"@release\"<br/>\
+}");
+        $states.push("Now that we have a bunch of files with variables let's set them. Type next to check out config.");
         
         $stateFS.push('empty');
         $enabledCommands = $enabledCommands.concat($fscmd);
