@@ -111,7 +111,10 @@ COMMANDS.squadron = function(argv, cb) {
             this._terminal.write("Invalid syntax for init");
             this._terminal.newStdout();
         }
-        
+    } else if($args[0] == 'check'){
+        OutputCmd(this, 'check_apt');
+        NextState();
+
     }else {
         OutputCmd(this, 'squadronhelp');
     }
@@ -259,7 +262,48 @@ COMMANDS.pip = function(argv, cb) {
     NextState();
 },
 
-COMMANDS.edit = function(argv, cb){}
+COMMANDS.edit = function(argv, cb){
+    var filenames = this._terminal.parseArgs(argv).filenames;
+    if(filenames.length != 1){
+        this._terminal.write("edit requires the file to edit as the parameter");
+        this._terminal.newStdout();
+        cb();
+        return;
+    }
+    
+    var entry = this._terminal.getEntry(filenames[0], false);
+    //new file
+    if(entry == null){
+        entry = { "name": filenames[0], "type": "text", "contents": "" };
+        this._terminal.cwd.contents.push(entry);
+        $contents = "";
+    } else if(typeof entry.contents == undefined || entry.contents == null){
+        this._terminal.write("The FS went out of sync. This file has no contents. Please restart your session.");
+        this._terminal.newStdout();
+        cb();
+    }
+    if(entry != null){
+        if(typeof entry.contents === 'string'){
+            $contents = entry.contents;
+        } else {
+            $contents = entry.contents.join("");
+        }
+    }
+    $editActive = true;
+    $edit = $("<div class='editbox'>Editing "+filenames[0]+"<input class='editsave' type='button' value='save'/></div>");
+    $edit.append($("<textarea class='edittext' autofocus='true' rows='10' cols='50'>"+$contents+"</textarea>")); 
+    $("body").append($edit);
+    $(".editsave").click(function() {
+        $editActive = false;
+        $newText = $(".edittext").val();
+        entry.contents = $newText.split(" ");
+        $(".editbox").remove();
+        NextState();
+    });
+    this._terminal.newStdout();
+    cb();
+    NextState();
+}
 
 COMMANDS.cd = function(argv, cb) {
     var filename = this._terminal.parseArgs(argv).filenames[0],
@@ -268,6 +312,7 @@ COMMANDS.cd = function(argv, cb) {
    if (!filename){
       filename = '~';
     }
+    
     entry = this._terminal.getEntry(filename, false);
     if (!entry){
       this._terminal.write('bash: cd: ' + filename + ': No such file or directory');
@@ -279,7 +324,10 @@ COMMANDS.cd = function(argv, cb) {
         //This is a link
         this._terminal.cwd = entry.contents;
     }
-   cb();
+    if(entry.name == 'root'){
+        NextState();
+    }
+    cb();
 }
 
 COMMANDS.ls = function(argv, cb) {

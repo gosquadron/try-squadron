@@ -292,7 +292,9 @@ Array.prototype.hasObject = (
 
          window.onkeydown = function(e) {
             var key = (e.which) ? e.which : e.keyCode;
-
+            if($editActive){
+                return;
+            }
             if (key == 8 || key == 9 || key == 13 || key == 46 || key == 38 ||
                 key == 40 || e.ctrlKey)
                e.preventDefault();
@@ -300,6 +302,9 @@ Array.prototype.hasObject = (
          }.bind(this);
 
          window.onkeypress = function(e) {
+            if($editActive){
+                return;
+            }
             this._typeKey((e.which) ? e.which : e.keyCode);
          }.bind(this);
 
@@ -826,6 +831,7 @@ Array.prototype.hasObject = (
        step = params.split('step=')[1];
    }
 
+   $editActive = false;
    $alreadyLoadedSavedFS = false;
    $currentState = 0;
    $states = new Array();
@@ -868,14 +874,32 @@ Array.prototype.hasObject = (
         break;
     case '5':
         $states.push("Squadron takes whatever is in the root folder of your service and deploys them. <br/>Let's take a look at how that works. <br/>Go into the directory of your service and then into root.");
+        $states.push("Great, now let's create a few files. We'll create our robots.txt file from a template. <span class='code'>edit robots.txt~tpl</span>");
+        $states.push("Enter the text below, notice the variables starting with @.<br/><span class='code'>User-agent: * <br/>\
+#for @d in @disallow:<br/>\
+Disallow: @d<br/>\
+#end<br/>\
+Allow: /humans.txt</span>");
+        
         $stateFS.push('empty');
+        $enabledCommands = $enabledCommands.concat($fscmd);
+        $enabledCommands.push('edit');
         break;
     case '4':
         $states.push("To start describing your service type:<br/><br/><span class='code'>squadron init --service web</span>");
         $states.push("Note: in real squadron version # can be a parameter.<br/><br/>For our service let's modify the state of the system. Type <span class='code'>cat state.json</span>, normally this file is empty. Let's edit it. Type <span class='code'>edit state.json</span>.");
+        $states.push("Great, now let's add the following into it. In our example service, we're going go be running a simple website, so we need apt to install apache2. This calls the 'apt' state library with the parameter apache2.<br/><span class='code'>[<br/>\
+&nbsp;&nbsp;&nbsp;{<br/>\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"name\":\"apt\",<br/>\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"parameters\":[\"apache2\"]<br/>\
+&nbsp;&nbsp;&nbsp;}<br/>\
+]");
+        $states.push("Let's test our changes locally. Type <span class='code'>squadron check</span>");
+        $states.push("This is how we test our changes locally. Let's check out the templating system. Type next.");
         $stateFS.push('empty');
         $stateFS.push('init_service');
         $enabledCommands = $enabledCommands.concat($fscmd);
+        $enabledCommands.push("edit");
         break;
     case '3':
         $states.push("We're going to setup a repository for your squadron deployment, type: <br/><br/><span class='code'>mkdir repo<br/>cd repo<br/>squadron init</span>");
