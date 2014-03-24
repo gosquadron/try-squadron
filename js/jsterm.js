@@ -132,35 +132,82 @@ Array.prototype.hasObject = (
       },
     
     dedupeFolders: function($curDir){
+        
         if($curDir == undefined || $curDir == null){
             $curDir = this.fs;
         }
+        //If there are contents
         if($curDir.contents != undefined && $curDir.contents != null)
         {
+            //And there is actually something
             if($curDir.contents.length == 0){
                 return;
             }
+            //Loop through all of the dirs except . and ..
             $seenNames = new Array();
-            for($i = 0; $i < $curDir.contents.length; $i++){
-                if($curDir.contents[$i].name == '.' || $curDir.contents[$i].name == '..' || $curDir.type != "dir"){
+            for(var i = 0; i < $curDir.contents.length; i++){
+                $curItem = $curDir.contents[i];
+                if($curItem.name == '.' || $curItem.name == '..' || $curItem.type != "dir"){
                     continue;
                 }
-                $nextItem = $curDir.contents[$i];
-                
-                this.dedupeFolders($nextItem);
-                $nextItemName = $nextItem.name;
-                $seenNames.push([$nextItemName, $i]);
+                //Seriously, only dirs :)
+                if($curItem.type !="dir"){
+                    continue;
+                }
+
+                //Add the current name and the index 
+                $seenNames.push([$curItem.name, i]);
             }
             $seenNames.sort();
             if($seenNames.length > 0){
-                $lastSeen = $seenNames[0][0];
-                for($i = 0; $i < $seenNames.length; $i++){
-                    if($lastSeen == $seenNames[$i][0]){
-                        $nothing = $lastSeen;
-//                        debugger;
+                $lastSeenName = $seenNames[0][0];
+                $lastSeenIndex = $seenNames[0][1];
+                if($seenNames.length > 1){
+                    for(var i = 1; i < $seenNames.length; i++){
+                        $curSeenName = $seenNames[i][0];
+                        if($lastSeenName == $curSeenName){
+
+                            $SlaveIndex = $seenNames[i][1];
+                            $MasterIndex = $lastSeenIndex;
+
+                            //Let's merge the contents
+                            $Master = $curDir.contents[$MasterIndex];
+                            $Slave = $curDir.contents[$SlaveIndex];
+                            
+                            //Loop through slave copy contents 
+                            for(var inside=0; inside < $Slave.contents.length; inside++){
+                                $slaveItem = $Slave.contents[inside];
+                                $Master.contents.push($slaveItem);
+                                //Fix the .. in the slaveItem's contents if
+                                //applicable
+                                if($slaveItem.type == 'link' || $slaveItem.type == 'dir'){
+                                    for(var furtherInside = 0; furtherInside < $slaveItem.contents.length; furtherInside++){
+                                        $fixSlaveItem = $slaveItem.contents[furtherInside];
+                                        if($fixSlaveItem.name == '..'){
+                                            $fixSlaveItem.contents = $Master;
+                                        } 
+                                    }
+                                }
+                            }
+
+                            //Now remove the slave
+                            $curDir.contents.splice($SlaveIndex, 1);
+
+                            debugger;
+                        }
+                        $lastSeenName = $curSeenName;
+                        $lastSeenIndex = $seenNames[i][1];
                     }
-                    $lastSeen = $seenNames[$i][0];
                 }
+            }
+
+            //Here we would go in depth again
+            for(var i = 0; i < $curDir.contents.length; i++){
+                $curItem = $curDir.contents[i];
+                if($curItem.name == '.' || $curItem.name == '..' || $curItem.type != "dir"){
+                    continue;
+                }
+                this.dedupeFolders($curItem);
             }
             
         }
