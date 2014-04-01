@@ -130,7 +130,20 @@ COMMANDS.squadron = function(argv, cb) {
         this._terminal.reloadCWD();
         OutputCmd(this, 'check_all');
         NextState();
-    
+    } else if($args[0] == 'apply'){
+        if(!$applied){
+            $applied = true;
+            this._terminal.cwd = this._terminal.getEntry('~', false);
+            this._terminal.reloadCWD();
+            OutputCmd(this, 'apply'); 
+            NextState();
+        } else {
+            OutputCmd(this, 'denyapply');
+            NextState();
+        }
+    } else if($args[0] == 'daemon'){
+        OutputCmd(this, 'daemon');
+        NextState();
     }else {
         OutputCmd(this, 'squadronhelp');
     }

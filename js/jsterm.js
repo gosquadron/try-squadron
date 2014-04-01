@@ -853,7 +853,7 @@ Array.prototype.hasObject = (
        var params = window.location.href.toString().split(window.location.host)[1].split('?')[1];
        step = params.split('step=')[1];
    }
-
+   $applied = false;
    $editActive = false;
    $alreadyLoadedSavedFS = false;
    $currentState = 0;
@@ -874,14 +874,21 @@ Array.prototype.hasObject = (
    $fscmd = ['squadron', 'ls', 'pwd', 'cd', 'cat', 'tree', 'mkdir', 'dir']
    $filesystem = 'json/empty.json';
    switch(step){
-    case '12':
-        $states.push('<iframe width="420" height="315" src="//www.youtube.com/embed/9_t-fmpfp5E?autoplay=1" frameborder="0" allowfullscreen></iframe>');
-        break;
     case '11':
-        $states.push('<iframe width="560" height="315" src="//www.youtube.com/embed/Kx5INl9Z1IE?autoplay=1" frameborder="0" allowfullscreen></iframe>');
+        $states.push('Squadron works best if we setup a git repo and push our changes to it. <br/>To push changes, we would just trigger them with git push normally.<br/>Let\'s run the daemon by doing <span class="code">squadron daemon</span>');
+        $states.push("It's really that simple, normally the daemon would sit here running and updating the system.<br/><br/>Thanks for trying out the demo and please check out our more detailed <a href='http://docs.gosquadron.com/en/latest/gettingstarted.html'>Getting Started Guide</a> and give us feedback on Squadron, this demo, our docs, or anything you might need at info@gosquadron.com.");
+        $stateFS.push('empty');
+        $enabledCommands = $enabledCommands.concat($fscmd);
+        $enabledCommands.push('edit');
         break;
     case '10':
-        $states.push('lololol');
+        $states.push("Now let's assume that this is the machine you actually wanted to deploy to. Well you only need to run <span class='code'>squadron apply</span>");
+        $states.push("In real squadron, the staging directory is versioned which allows auto rollback. Try to apply it again.");
+        $states.push("Finally let's deploy our stuff remotely in the <span class='code'>next</span> section.");
+        $stateFS.push('empty');
+        $stateFS.push('apply');
+        $enabledCommands = $enabledCommands.concat($fscmd);
+        $enabledCommands.push('edit');
         break;
     case '9':
         $states.push('To test our changes, Squadron lets you see what it would do without changing your system. Type <span class="code">squadron check</span>');
@@ -932,7 +939,7 @@ Array.prototype.hasObject = (
         $states.push("Alright, to set the variables we just used, we need to configure 'environments', such as dev, production.<br/>Let's create an environment by calling <span class='code'>squadron init --env dev</span>");
         $states.push("Your environment will be under the ~/repo/config/dev folder, under that directory will be json file with your service web.json. <br/>Let's <span class='code'>edit web.json</span>");
         $states.push("Let's add the variables we just used.<br/>We'll also be adding \"base_dir\" which tells squadron where \"root\" belongs.<br/>Notice the latest version number is there already<br/><span class='code'>{<br/>\
-&nbsp;&nbsp;&nbsp;\"base_dir\": \"/var/www\",<br/>\
+&nbsp;&nbsp;&nbsp;\"base_dir\": \"/home/rawls/base\",<br/>\
 &nbsp;&nbsp;&nbsp;\"config\": {<br/>\
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"disallow\":[\"/secret/*\",\"/admin/*\"],<br/>\
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"release\":\"master\"<br/>\
