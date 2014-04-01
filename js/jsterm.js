@@ -910,7 +910,7 @@ Array.prototype.hasObject = (
         $enabledCommands.push('edit');
         break;
     case '7':
-        $states.push('Every service will have a <span class="code">schema.json</span>, this file is extremely useful (but optional).<br/>It makes sure that your service has the correct type of inputs before even doing anything.<br/>Let\'s <span class="code">edit schema.json</span> to match the new values in our new service.');
+        $states.push('Every service will have a <span class="code">schema.json</span>.<br/>It makes sure that your service has the correct type of inputs before even doing anything.<br/>Let\'s go back to the web service directory and then <span class="code">edit schema.json</span> to match the new values in our new service.');
         $states.push('Enter the following in the schema file. <br/><br/><span class="code">{<br/>\
 "$schema": "http://json-schema.org/draft-04/schema#",<br/>\
 "type" : "object",<br/>\
