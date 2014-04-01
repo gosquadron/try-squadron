@@ -221,6 +221,9 @@ Array.prototype.hasObject = (
             if(typeof $serviceName != 'undefined'  && $serviceName != null){
                 responseText = replaceAll('~servicename~', $serviceName, responseText);
             }
+            if(typeof $envName != 'undefined' && $envName != null){
+                responseText = replaceAll('~envname~', $envName, responseText);
+            }
             $newfs = JSON.parse(responseText);
             if(this.cwd == undefined || this.cwd == null){
                 if(this.fs == undefined || this.fs == null){
@@ -760,6 +763,15 @@ Array.prototype.hasObject = (
                 this.cwd = entry.contents;
             }
         }
+        if($.jStorage.get('squadron_service', '').length > 0){
+            $serviceName = $.jStorage.get('squadron_service', 'web');
+        }
+        if($.jStorage.get('squadron_environment', '').length > 0){
+            $envName = $.jStorage.get('squadron_environment', 'dev');
+        }
+        if($.jStorage.get('squadron_repo', '').length > 0){
+            $repoDir = $.jStorage.get('squadron_repo', '');
+        }
         //This reloads the terminal so it updates the cwd
         this.defaultReturnHandler();
         this._prompt()
@@ -776,6 +788,17 @@ Array.prototype.hasObject = (
         $jsonstr = this._GetFSJSON();
         $.jStorage.set("squadronfs", $jsonstr);
         $.jStorage.set("squadroncwd", this.dirString(this.cwd));
+
+        if(typeof $repoDir != 'undefined' && $repoDir != null){
+            $.jStorage.set("squadron_repo", $repoDir);
+        }
+
+        if(typeof $serviceName != 'undefined' && $serviceName != null){
+            $.jStorage.set("squadron_service", $serviceName);
+        }
+        if(typeof $envName != 'undefined' && $envName != null){
+            $.jStorage.set("squadron_environment", $envName);
+        }
     },
 
     _resetFS: function() {
@@ -861,14 +884,27 @@ Array.prototype.hasObject = (
         $states.push('lololol');
         break;
     case '9':
-        $states.push('<3');
+        $states.push('To test our changes, Squadron lets you see what it would do without changing your system. Type <span class="code">squadron check</span>');
+        $states.push("Check out <span class='code'>tmp/website/main/robots.txt</span> and notice our template was applied. <br/><span class=\"code\">Next</span> let's deploy locally.");
+        $stateFS.push('empty');
+        $stateFS.push('check');
+        $enabledCommands = $enabledCommands.concat($fscmd);
+        $enabledCommands.push('edit');
         break;
     case '8':
-        $states.push('cute cute cute');
+        $states.push('Now, when you run the daemon we need to figure out what the machine is for.<br/>We solve this with nodes.<br/><br/>In the nodes directory we match the file name here with the FQDN of the machine, you can use % as a glob market instead of (*). <br/>Let\'s create a basic one called % in the nodes directory. <span class="code">edit %</span>');
+        $states.push('A simple file looks like the following: <br/><span class="code">{<br/>\
+            "env": "dev",<br/>\
+            "services": ["web"]<br/>\
+        }');
+        $states.push("That's it! You have a service, environments, and nodes. <span class='code'>next</span> let's test things");
+        $stateFS.push('empty');
+        $enabledCommands = $enabledCommands.concat($fscmd);
+        $enabledCommands.push('edit');
         break;
     case '7':
-        $states.push('Every service will have a schema.json, this file is extremely useful to make sure that your service has the correct type of inputs before even doing anything. Let\'s edit schema.json in our new service.');
-        $states.push('{<br/>\
+        $states.push('Every service will have a <span class="code">schema.json</span>, this file is extremely useful (but optional).<br/>It makes sure that your service has the correct type of inputs before even doing anything.<br/>Let\'s <span class="code">edit schema.json</span> to match the new values in our new service.');
+        $states.push('Enter the following in the schema file. <br/><br/><span class="code">{<br/>\
 "$schema": "http://json-schema.org/draft-04/schema#",<br/>\
 "type" : "object",<br/>\
 "properties" : {<br/>\
@@ -885,12 +921,16 @@ Array.prototype.hasObject = (
 "type" : "string"<br/>\
 }<br/>\
 },<br/>\
-"required": ["disallow", "release"]<br/>\
+"required": ["disallow", "release"]<br/></span>\
 }');
+        $states.push('Now whenever we run any squadron command our schema will be verified. This stops simple typing mistakes in config files. <span class="code">next</span> we\'ll cover nodes.');
+        $stateFS.push('empty');
+        $enabledCommands = $enabledCommands.concat($fscmd);
+        $enabledCommands.push('edit');
         break;
     case '6':
         $states.push("Alright, to set the variables we just used, we need to configure 'environments', such as dev, production.<br/>Let's create an environment by calling <span class='code'>squadron init --env dev</span>");
-        $states.push("Now there will be a file under config/dev/web.json.<br/>Let's <span class='code'>edit web.json</span>");
+        $states.push("Your environment will be under the ~/repo/config/dev folder, under that directory will be json file with your service web.json. <br/>Let's <span class='code'>edit web.json</span>");
         $states.push("Let's add the variables we just used.<br/>We'll also be adding \"base_dir\" which tells squadron where \"root\" belongs.<br/>Notice the latest version number is there already<br/><span class='code'>{<br/>\
 &nbsp;&nbsp;&nbsp;\"base_dir\": \"/var/www\",<br/>\
 &nbsp;&nbsp;&nbsp;\"config\": {<br/>\
@@ -901,6 +941,7 @@ Array.prototype.hasObject = (
 }");
         $states.push("The other way varialbes are set are using defaults, we could edited defaults.json under our service to achieve this. Next we'll cover schemas.");
         $stateFS.push('empty');
+        $stateFS.push('init_environment');
         $enabledCommands = $enabledCommands.concat($fscmd);
         $enabledCommands.push('edit');
         break;

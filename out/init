@@ -1,4 +1,2 @@
-Creating Squadron config in /home/redprophet/blah
+Creating Squadron config in /home/redprophet/.squadron
 Squadron has been initialized
-Now, you can initialized your service:
-        squadron init --service service_name

@@ -28,6 +28,9 @@ function GetOutput(outname){
     if(typeof $serviceName != 'undefined' && $serviceName != null){
         $text = replaceAll('~servicename~', $serviceName, $text);
     }
+    if(typeof $envName != 'undefined' && $envName != null){
+        $text = replaceAll('~environment~', $envName, $text);
+    }
     return $text;
 
 }
@@ -101,20 +104,33 @@ COMMANDS.squadron = function(argv, cb) {
         NextState();
     } else if ($args[0] == 'init' ) {
         if($args.length == 1 && $specialArgs.length == 0){
+            $repoDir = this._terminal.dirString(this._terminal.cwd);
             OutputCmd(this, 'init');
             NextState();
         } else if($jSpecial == '-service' && $args.length == 2){
             $serviceName = $args[1];//We will replace this automatically
             OutputCmd(this, 'init_service');
             NextState();
+        } else if($jSpecial == '-env' && $args.length == 2){
+            $envName = $args[1];
+            this._terminal.cwd = this._terminal.getEntry($repoDir, false);
+            this._terminal.reloadCWD();
+            OutputCmd(this, 'init_environment');
+            NextState();
+        
         } else {
             this._terminal.write("Invalid syntax for init");
             this._terminal.newStdout();
         }
-    } else if($args[0] == 'check'){
+    } else if($args[0] == 'check' && $currentStep < 9){
         OutputCmd(this, 'check_apt');
         NextState();
-
+    } else if($args[0] == 'check'){
+        this._terminal.cwd = this._terminal.getEntry('~', false);
+        this._terminal.reloadCWD();
+        OutputCmd(this, 'check_all');
+        NextState();
+    
     }else {
         OutputCmd(this, 'squadronhelp');
     }
@@ -324,9 +340,10 @@ COMMANDS.cd = function(argv, cb) {
         //This is a link
         this._terminal.cwd = entry.contents;
     }
-    if(entry.name == 'root'){
+    if(entry != null && entry.name == 'root'){
         NextState();
     }
+
     cb();
 }
 
