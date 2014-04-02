@@ -1,0 +1,10 @@
+Staging directory: /home/rawls/tmp
+Would process apache2 through apt
+Dry run changes
+===============
+Paths changed:
+
+New paths:
+    website/robots.txt
+    website/main/index.html
+

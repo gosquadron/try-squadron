@@ -1,0 +1,25 @@
+{
+   "type": "dir",
+   "name": "~",
+   "contents": [
+      { 
+         "type": "dir",
+         "name": "config",
+         "contents": [
+             { 
+                "type": "dir",
+                "name": "~envname~",
+                "contents": [
+                    {  
+                        "type": "text",
+                        "name": "~servicename~.json",
+                        "description": "TODO",
+                        "contents": "{\n\t\"base_dir\": \"TODO\",\n\t\"config\": {},\n\t\"version\": \"0.0.1\"\n}"
+                    }
+                ]
+            }
+        ]
+      }
+    ]
+}
+

@@ -1,0 +1,11 @@
+Staging directory: /home/rawls/tmp
+Processing apache2 through apt
+Applying changes
+Successfully deployed to /home/rawls/base
+===============
+Paths changed:
+
+New paths:
+    website/robots.txt
+    website/main/index.html
+

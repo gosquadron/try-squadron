@@ -1,0 +1,39 @@
+{
+   "type": "dir",
+   "name": "~",
+   "contents": [
+      {
+         "type": "dir", 
+         "name": "base", 
+         "contents": [
+             
+         {
+             "type": "dir",
+             "name": "web",
+             "contents": [
+                    {
+                        "type": "text",
+                        "name": "robots.txt",
+                        "description": "TODO",
+                        "contents": "User-agent: *<br/><br/>Disallow: /secret/*<br/><br/>Disallow: /admin/*<br/>Allow: /humans.txt"
+                    },
+                    {
+                        "type": "dir",
+                        "name": "main",
+                        "contents": [
+                                {
+                                    "type": "text",
+                                    "name": "index.html",
+                                    "description": "TODO",
+                                    "contents": "Hello Squadron!"
+                                }
+                            ]
+                    }
+
+                 ]
+            }     
+        ]
+      } 
+   ]
+}
+
