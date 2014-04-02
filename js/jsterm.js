@@ -1006,7 +1006,7 @@ Allow: /humans.txt</span>");
         
         $enabledCommands.push("pip");
         $stateFS.push('empty');
-        $states.push("Welcome to Squadron's Tutorial! I'm Rawls and I'm here to help you.<br/>Let's install squadron with the following command:<br/><br/><span class='code'>pip install squadron</span>");
+        $states.push("Welcome to Squadron's Tutorial! I'm Rawls and I'm here to help you.<br/>(Note this tutorial works best in Chrome)<br/><br/>Let's install squadron with the following command:<br/><br/><span class='code'>pip install squadron</span>");
         $states.push("Well done! <br/><br/>Use the navigation bar below to move to the next step or type: <br/><br/><span class='code'>next</span>");
         break;
    }
