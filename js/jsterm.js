@@ -910,7 +910,7 @@ Array.prototype.hasObject = (
         $enabledCommands.push('edit');
         break;
     case '7':
-        $states.push('Every service will have a <span class="code">schema.json</span>, this file is extremely useful (but optional).<br/>It makes sure that your service has the correct type of inputs before even doing anything.<br/>Let\'s <span class="code">edit schema.json</span> to match the new values in our new service.');
+        $states.push('Every service will have a <span class="code">schema.json</span>.<br/>It makes sure that your service has the correct type of inputs before even doing anything.<br/>Let\'s go back to the web service directory and then <span class="code">edit schema.json</span> to match the new values in our new service.');
         $states.push('Enter the following in the schema file. <br/><br/><span class="code">{<br/>\
 "$schema": "http://json-schema.org/draft-04/schema#",<br/>\
 "type" : "object",<br/>\
@@ -973,7 +973,7 @@ Allow: /humans.txt</span>");
         break;
     case '4':
         $states.push("To start describing your service type:<br/><br/><span class='code'>squadron init --service web</span>");
-        $states.push("Note: in real squadron version # can be a parameter.<br/><br/>For our service let's modify the state of the system. Type <span class='code'>cat state.json</span>, normally this file is empty. Let's edit it. Type <span class='code'>edit state.json</span>.");
+        $states.push("Your service is in the services directory. Type cd services and explore.<br/><br/>Let's modify the state of the system that our service requires. Type <span class='code'>cat state.json</span> in your service directory. Normally, this file is empty. Let's edit it. Type <span class='code'>edit state.json</span>.");
         $states.push("Great, now let's add the following into it. In our example service, we're going go be running a simple website, so we need apt to install apache2. This calls the 'apt' state library with the parameter apache2.<br/><span class='code'>[<br/>\
 &nbsp;&nbsp;&nbsp;{<br/>\
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"name\":\"apt\",<br/>\
