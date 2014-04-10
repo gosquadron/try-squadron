@@ -364,7 +364,7 @@ COMMANDS.ls = function(argv, cb) {
    var result = this._terminal.parseArgs(argv),
        args = result.args,
        filename = result.filenames[0],
-       entry = filename ? this._terminal.getEntry(filename) : this._terminal.cwd,
+       entry = filename ? this._terminal.getEntry(filename, false) : this._terminal.cwd,
        maxLen = 0,
        writeEntry;
 
