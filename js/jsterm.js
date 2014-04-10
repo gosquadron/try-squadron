@@ -313,7 +313,9 @@ Array.prototype.hasObject = (
 
          this.returnHandler = this._execute;
          this.cwd = this.fs;
-         this._prompt();
+         if($currentStep == 1){
+             this._prompt();
+         }
          this._toggleBlinker(600);
          this._dequeue();
       },
