@@ -322,6 +322,7 @@ COMMANDS.edit = function(argv, cb){
     $edit = $("<div class='editbox'>Editing "+filenames[0]+"<input class='editsave' type='button' value='save'/></div>");
     $edit.append($("<textarea class='edittext' autofocus='true' rows='10' cols='50'>"+$contents+"</textarea>")); 
     $("body").append($edit);
+    $edit.tabby();
     $(".editsave").click(function() {
         $editActive = false;
         $newText = $(".edittext").val();
