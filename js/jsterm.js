@@ -299,7 +299,7 @@ Array.prototype.hasObject = (
                 return;
             }
             if (key == 8 || key == 9 || key == 13 || key == 46 || key == 38 ||
-                key == 40 || e.ctrlKey)
+                key == 40 || e.ctrlKey || key == 191)
                e.preventDefault();
             this._handleSpecialKey(key, e);
          }.bind(this);
@@ -712,6 +712,9 @@ Array.prototype.hasObject = (
          if (key == 8 || key == 46)
             stdout.innerHTML = stdout.innerHTML.replace(/.$/, '');
          // Enter.
+         else if(key == 191){
+            stdout.innerHTML = stdout.innerHTML + '/';
+         }
          else if (key == 13)
             this.returnHandler(stdout.innerHTML);
          // Up arrow.
