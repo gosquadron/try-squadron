@@ -474,7 +474,7 @@ Array.prototype.hasObject = (
       },
 
       scroll: function() {
-         window.scrollTo(0, document.body.scrollHeight);
+         window.scrollTo(0, document.body.scrollHeight -200);
          //$('body').scrollTo('.prompt');
       },
 
