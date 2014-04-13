@@ -474,7 +474,14 @@ Array.prototype.hasObject = (
       },
 
       scroll: function() {
-         window.scrollTo(0, document.body.scrollHeight -200);
+         //window.scrollTo(0, document.body.scrollHeight/1.5);
+         $windowTop = $(document).scrollTop();
+         $windowHeight = $(document).height();
+         $dudePosition = $(".dude").offset().top;
+         $(document).scrollTo({top: $('.dude').offset().top-500, left:'0'}, 0);
+//         if(($windowTop+$windowHeight) < $dudePosition){
+//             window.scrollTo(0, $(".dude").offset().top);
+//         }
          //$('body').scrollTo('.prompt');
       },
 
